@@ -1,0 +1,25 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "SMSTunnel",
+        "description": "Send SMS through your own Android phone. You need an API key with the sms:send permission, created in your SMSTunnel dashboard.",
+        "data": {
+          "api_key": "API key",
+          "recipients": "Recipients (comma separated)",
+          "base_url": "Server URL",
+          "default_country_code": "Default country code (e.g. +40)",
+          "device_id": "Device ID (optional)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach the SMSTunnel server. Check the server URL and your network.",
+      "invalid_auth": "The API key was rejected. Check that it is correct and has the sms:send permission.",
+      "no_recipients": "Enter at least one phone number."
+    },
+    "abort": {
+      "already_configured": "This SMSTunnel account is already configured."
+    }
+  }
+}
