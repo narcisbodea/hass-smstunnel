@@ -2,6 +2,8 @@
 
 Send SMS from Home Assistant through **your own Android phone**, using **your own SIM card**.
 
+<a href="https://play.google.com/store/apps/details?id=io.smstunnel.app"><img src="https://smstunnel.io/google-play-badge.png" alt="Get it on Google Play" height="56"></a>
+
 No per-message fees, no third-party SMS gateway seeing your messages — the phone you already own does the sending. And because SMS doesn't need the recipient to have internet, alerts still arrive when everything else is down.
 
 ## Why this fits Home Assistant
