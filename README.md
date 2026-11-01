@@ -35,7 +35,7 @@ Typical uses:
 ## Configuration
 
 1. Install the [SMSTunnel app from Google Play](https://play.google.com/store/apps/details?id=io.smstunnel.app) and pair your Android phone in it (scan the QR code)
-2. In your SMSTunnel dashboard, create an API key with the `sms:send` permission
+2. In your [SMSTunnel dashboard](https://dashboard.smstunnel.io/apps), open **Apps** → **Add an app**, choose **Home Assistant** and copy its key
 3. In Home Assistant: **Settings → Devices & Services → Add Integration → SMSTunnel**
 
 | Field | Notes |
