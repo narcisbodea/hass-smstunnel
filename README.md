@@ -4,7 +4,7 @@ Send SMS from Home Assistant through **your own Android phone**, using **your ow
 
 <a href="https://play.google.com/store/apps/details?id=io.smstunnel.app"><img src="https://smstunnel.io/google-play-badge.png" alt="Get it on Google Play" height="56"></a>
 
-No per-message fees, no third-party SMS gateway seeing your messages — the phone you already own does the sending. And because SMS doesn't need the recipient to have internet, alerts still arrive when everything else is down.
+No per-message fees, no third-party SMS provider seeing your messages — the phone you already own does the sending. And because SMS doesn't need the recipient to have internet, alerts still arrive when everything else is down.
 
 ## Why this fits Home Assistant
 
@@ -137,7 +137,7 @@ Rules for your answer:
 
 ## Responsible use
 
-Built for **low-volume, transactional messaging** — alerts and notifications to yourself and your household. Sending unsolicited bulk messages from a consumer SIM generally breaches mobile carrier terms of service.
+Built for **low-volume, transactional messaging** — alerts and notifications to yourself and your household. Unsolicited texts from a personal SIM break most mobile carriers' terms of service.
 
 ## Links
 
