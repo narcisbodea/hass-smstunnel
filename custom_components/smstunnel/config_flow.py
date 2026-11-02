@@ -11,6 +11,11 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.selector import (
+    TextSelector,
+    TextSelectorConfig,
+    TextSelectorType,
+)
 
 from .const import (
     CONF_API_KEY,
@@ -29,11 +34,17 @@ _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_API_KEY): str,
-        vol.Required(CONF_RECIPIENTS): str,
-        vol.Optional(CONF_BASE_URL, default=DEFAULT_BASE_URL): str,
-        vol.Optional(CONF_DEFAULT_COUNTRY_CODE): str,
-        vol.Optional(CONF_DEVICE_ID): str,
+        # Cheia e secreta: camp de parola, afisat ca puncte (un camp "str"
+        # ar arata cheia in clar pe ecran). Toate campurile sunt selectoare:
+        # amestecate cu "str", Home Assistant 2026.10 arata "Required" sub
+        # Recipients chiar de la deschiderea formularului.
+        vol.Required(CONF_API_KEY): TextSelector(
+            TextSelectorConfig(type=TextSelectorType.PASSWORD)
+        ),
+        vol.Required(CONF_RECIPIENTS): TextSelector(),
+        vol.Optional(CONF_BASE_URL, default=DEFAULT_BASE_URL): TextSelector(),
+        vol.Optional(CONF_DEFAULT_COUNTRY_CODE): TextSelector(),
+        vol.Optional(CONF_DEVICE_ID): TextSelector(),
     }
 )
 

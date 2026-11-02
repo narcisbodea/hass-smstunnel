@@ -144,6 +144,11 @@ Built for **low-volume, transactional messaging** — alerts and notifications t
 - [SMSTunnel](https://smstunnel.io)
 - [Documentation](https://smstunnel.io/integrations/home-assistant)
 
+## Changelog
+
+- **1.0.1**: the API key is typed into a password field, removing the integration stops `notify.smstunnel` at once (no restart), and SMSTunnel's icon shows in Home Assistant.
+- **1.0.0**: first release.
+
 ## License
 
 MIT

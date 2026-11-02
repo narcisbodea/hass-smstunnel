@@ -11,6 +11,11 @@ CONF_DEVICE_ID = "device_id"
 DEFAULT_BASE_URL = "https://smstunnel.io"
 DEFAULT_NAME = "SMSTunnel"
 
+# hass.data[DOMAIN][entry_id]: configuratia intrarii si serviciul notify
+# creat din ea (scos la stergerea intrarii, in async_unload_entry).
+DATA_CONFIG = "config"
+DATA_SERVICE = "service"
+
 # Endpoints ale API-ului public SMSTunnel
 PATH_SEND = "/api/v1/sms/send"
 PATH_USAGE = "/api/v1/account/usage"

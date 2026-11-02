@@ -22,6 +22,8 @@ from .const import (
     CONF_DEFAULT_COUNTRY_CODE,
     CONF_DEVICE_ID,
     CONF_RECIPIENTS,
+    DATA_CONFIG,
+    DATA_SERVICE,
     DOMAIN,
     MAX_MESSAGE_LENGTH,
     PATH_SEND,
@@ -40,19 +42,27 @@ async def async_get_service(
     if discovery_info is None:
         return None
 
-    entry_data = hass.data.get(DOMAIN, {}).get(discovery_info["entry_id"])
+    entry_id = discovery_info["entry_id"]
+    entry_data = hass.data.get(DOMAIN, {}).get(entry_id)
     if not entry_data:
+        # Intrarea a fost stearsa inainte sa ajunga platforma aici.
         return None
 
-    return SmsTunnelNotificationService(hass, entry_data)
+    service = SmsTunnelNotificationService(hass, entry_id, entry_data[DATA_CONFIG])
+    # Tinut minte ca sa fie scos la stergerea intrarii (async_unload_entry).
+    entry_data[DATA_SERVICE] = service
+    return service
 
 
 class SmsTunnelNotificationService(BaseNotificationService):
     """Send SMS through SMSTunnel."""
 
-    def __init__(self, hass: HomeAssistant, config: dict[str, Any]) -> None:
+    def __init__(
+        self, hass: HomeAssistant, entry_id: str, config: dict[str, Any]
+    ) -> None:
         """Initialise the service."""
         self.hass = hass
+        self._entry_id = entry_id
         self._api_key: str = config[CONF_API_KEY]
         self._base_url: str = config[CONF_BASE_URL].rstrip("/")
         self._recipients: list[str] = config[CONF_RECIPIENTS]
@@ -61,6 +71,13 @@ class SmsTunnelNotificationService(BaseNotificationService):
 
     async def async_send_message(self, message: str = "", **kwargs: Any) -> None:
         """Send an SMS to the configured recipients (or to `target`)."""
+        # Serviciul unei intrari sterse sau reincarcate (de ex. chiar cand
+        # actiunea se inregistra): cheia lui nu mai trimite nimic.
+        entry_data = self.hass.data.get(DOMAIN, {}).get(self._entry_id)
+        if not entry_data or entry_data[DATA_SERVICE] is not self:
+            _LOGGER.warning("SMSTunnel: this integration was removed, nothing sent")
+            return
+
         if not message:
             _LOGGER.warning("SMSTunnel: empty message, nothing sent")
             return
