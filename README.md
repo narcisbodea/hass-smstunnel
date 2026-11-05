@@ -34,7 +34,7 @@ Typical uses:
 
 ## Configuration
 
-1. Install the [SMSTunnel app from Google Play](https://play.google.com/store/apps/details?id=io.smstunnel.app) and pair your Android phone in it (scan the QR code)
+1. Install the [SMSTunnel app from Google Play](https://play.google.com/store/apps/details?id=io.smstunnel.app) on your Android phone and sign in with your SMSTunnel account
 2. In your [SMSTunnel dashboard](https://dashboard.smstunnel.io/apps), open **Apps** → **Add an app**, choose **Home Assistant** and copy its key
 3. In Home Assistant: **Settings → Devices & Services → Add Integration → SMSTunnel**
 
@@ -48,10 +48,10 @@ Typical uses:
 
 ## Usage
 
-The integration creates a `notify.smstunnel` service.
+The integration adds the action `notify.smstunnel` (YAML written before Home Assistant 2024.8 calls it `service:`; both work).
 
 ```yaml
-service: notify.smstunnel
+action: notify.smstunnel
 data:
   message: "Water leak detected in the basement!"
 ```
@@ -59,7 +59,7 @@ data:
 ### Override the recipient
 
 ```yaml
-service: notify.smstunnel
+action: notify.smstunnel
 data:
   message: "The alarm was triggered"
   target:
@@ -72,12 +72,12 @@ data:
 ```yaml
 automation:
   - alias: "SMS on water leak"
-    trigger:
-      - platform: state
+    triggers:
+      - trigger: state
         entity_id: binary_sensor.basement_water_leak
         to: "on"
-    action:
-      - service: notify.smstunnel
+    actions:
+      - action: notify.smstunnel
         data:
           title: "Home Assistant"
           message: "Water leak detected in the basement!"
@@ -87,7 +87,7 @@ A `title` is prepended to the message, since SMS has no separate title field.
 
 ## Good to know
 
-- **Rate limit**: the API allows 30 requests per minute. If you hit it, the log says so explicitly rather than silently dropping the message.
+- **Rate limit**: the API allows 30 texts a minute per API key. If you hit it, the log says so explicitly rather than silently dropping the message.
 - **Message length**: up to 1600 characters. Longer messages are truncated before sending, so a too-long message never fails validation outright.
 - **One failure doesn't block the rest**: if sending to one recipient fails, the others still go out.
 - **Automation loops**: be careful with triggers that can fire repeatedly (a flapping sensor). Add `for:` or a condition, otherwise you can burn through your quota — and your carrier's patience — in minutes.
