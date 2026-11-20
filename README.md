@@ -4,11 +4,11 @@ Send SMS from Home Assistant through **your own Android phone**, using **your ow
 
 <a href="https://play.google.com/store/apps/details?id=io.smstunnel.app"><img src="https://smstunnel.io/google-play-badge.png" alt="Get it on Google Play" height="56"></a>
 
-No per-message fees, no third-party SMS provider seeing your messages — the phone you already own does the sending. And because SMS doesn't need the recipient to have internet, alerts still arrive when everything else is down.
+No per-message fees and no SMS provider in between: the phone you already own sends the texts, from your number. And a text reaches the person you alert even when their phone has no mobile data and no app.
 
 ## Why this fits Home Assistant
 
-Push notifications fail exactly when you need them most: no data connection, phone on battery saver, app killed by the OS, or the internet at home being the very thing that broke. An SMS gets through.
+Push notifications can fail when you need them most: no data connection, battery saver, an app the phone's system has closed. A text needs none of that on the receiving phone. Home Assistant and the phone that sends still need to reach SMSTunnel over the internet.
 
 Typical uses:
 
