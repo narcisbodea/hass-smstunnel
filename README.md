@@ -22,10 +22,13 @@ Typical uses:
 
 ### HACS (recommended)
 
-1. In HACS, open the three-dot menu → **Custom repositories**
-2. Add `https://github.com/narcisbodea/hass-smstunnel` with category **Integration**
-3. Install **SMSTunnel**
-4. Restart Home Assistant
+SMSTunnel is in the HACS default list, so there is no custom repository to add.
+
+1. Open HACS and search for **SMSTunnel**
+2. Open it and click **Download**
+3. Restart Home Assistant
+
+[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=narcisbodea&repository=hass-smstunnel&category=integration)
 
 ### Manual
 
@@ -108,10 +111,9 @@ The phone runs the SMSTunnel app from Google Play
 What I want: [describe what should send a text, to whom, and when]
 
 How it works:
-- Install the custom integration from https://github.com/narcisbodea/hass-smstunnel: HACS →
-  three-dot menu → Custom repositories → that URL, category Integration → install SMSTunnel →
-  restart Home Assistant. Or copy custom_components/smstunnel into config/custom_components/ and
-  restart.
+- Install the SMSTunnel integration with HACS, where it is in the default list: HACS → search for
+  SMSTunnel → Download → restart Home Assistant. Or copy custom_components/smstunnel from
+  https://github.com/narcisbodea/hass-smstunnel into config/custom_components/ and restart.
 - Settings → Devices & Services → Add Integration → SMSTunnel: "API key", "Recipients (comma
   separated)", "Server URL" (https://smstunnel.io), "Default country code", "Device ID (optional)".
   The key is checked during setup. The settings can't be edited later: remove the integration and
