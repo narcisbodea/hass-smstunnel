@@ -49,6 +49,14 @@ SMSTunnel is in the HACS default list, so there is no custom repository to add.
 | **Default country code** | e.g. `+40`, so local numbers without a prefix still work |
 | **Device ID** | Optional — pin sending to one specific phone |
 
+### Change the settings later
+
+**Settings → Devices & Services → SMSTunnel → ⋮ → Reconfigure** opens the same fields with their current values. Change the recipients, the phone or the server and save: `notify.smstunnel` uses the new settings at once, with no restart. Leave the API key empty to keep the current one. The key is checked again before anything is saved.
+
+This needs Home Assistant 2024.4 or newer. On an older version, remove the integration and add it again.
+
+If you added SMSTunnel more than once, the menu asks you to remove the extra entries first: they all share the one action, and only one of them answers it.
+
 ## Usage
 
 The integration adds the action `notify.smstunnel` (YAML written before Home Assistant 2024.8 calls it `service:`; both work).
@@ -93,6 +101,7 @@ A `title` is prepended to the message, since SMS has no separate title field.
 - **Rate limit**: the API allows 30 texts a minute per API key. If you hit it, the log says so explicitly rather than silently dropping the message.
 - **Message length**: up to 1600 characters. Longer messages are truncated before sending, so a too-long message never fails validation outright.
 - **One failure doesn't block the rest**: if sending to one recipient fails, the others still go out.
+- **Add it once**: every SMSTunnel entry shares the one action `notify.smstunnel`, and only one entry answers it. To text different people from different automations, use `target`.
 - **Automation loops**: be careful with triggers that can fire repeatedly (a flapping sensor). Add `for:` or a condition, otherwise you can burn through your quota — and your carrier's patience — in minutes.
 
 ## Build it with an AI assistant
@@ -116,8 +125,8 @@ How it works:
   https://github.com/narcisbodea/hass-smstunnel into config/custom_components/ and restart.
 - Settings → Devices & Services → Add Integration → SMSTunnel: "API key", "Recipients (comma
   separated)", "Server URL" (https://smstunnel.io), "Default country code", "Device ID (optional)".
-  The key is checked during setup. The settings can't be edited later: remove the integration and
-  add it again.
+  The key is checked during setup. To change the settings later: SMSTunnel's menu on that page →
+  Reconfigure (Home Assistant 2024.4 or newer; an empty key field keeps the current key).
 - Action notify.smstunnel ("action:" in YAML; "service:" before Home Assistant 2024.8): message
   (required), title (the text becomes "title: message"), target (a number or a list; replaces the
   configured recipients for that call), and data: device_id or default_country_code for one call.
@@ -148,6 +157,8 @@ Built for **low-volume, transactional messaging** — alerts and notifications t
 
 ## Changelog
 
+- **1.1.0**: change the recipients, the phone, the server or the API key from the integration's **Reconfigure** menu, without removing it. Nothing else changes: `notify.smstunnel` sends exactly as before.
+- **1.0.2**: passes the HACS and hassfest checks, and the README says plainly what still needs an internet connection.
 - **1.0.1**: the API key is typed into a password field, removing the integration stops `notify.smstunnel` at once (no restart), and SMSTunnel's icon shows in Home Assistant.
 - **1.0.0**: first release.
 

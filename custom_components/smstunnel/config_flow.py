@@ -49,6 +49,22 @@ STEP_USER_SCHEMA = vol.Schema(
 )
 
 
+# Schimbarea setarilor unei intrari existente. Cheia e optionala: lasata
+# goala, ramane cea de acum (o cheie se vede o singura data in panou, deci
+# nu o cerem din nou doar ca sa schimbe cineva un numar).
+STEP_RECONFIGURE_SCHEMA = vol.Schema(
+    {
+        vol.Optional(CONF_API_KEY): TextSelector(
+            TextSelectorConfig(type=TextSelectorType.PASSWORD)
+        ),
+        vol.Required(CONF_RECIPIENTS): TextSelector(),
+        vol.Optional(CONF_BASE_URL, default=DEFAULT_BASE_URL): TextSelector(),
+        vol.Optional(CONF_DEFAULT_COUNTRY_CODE): TextSelector(),
+        vol.Optional(CONF_DEVICE_ID): TextSelector(),
+    }
+)
+
+
 def parse_recipients(raw: str) -> list[str]:
     """Split a comma/semicolon/newline separated list into clean numbers."""
     parts = raw.replace(";", ",").replace("\n", ",").split(",")
@@ -99,6 +115,92 @@ class SmsTunnelConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_SCHEMA, errors=errors
+        )
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Change the settings of an entry without removing it."""
+        entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
+        if entry is None:
+            return self.async_abort(reason="entry_not_found")
+
+        # Toate intrarile SMSTunnel au aceeasi actiune, notify.smstunnel, si
+        # doar una o tine. Schimbarea reincarca intrarea, iar la reincarcare
+        # actiunea ar trece la cealalta intrare: alertele ar pleca spre alte
+        # numere. Cu mai multe intrari incarcate nu schimbam nimic de aici.
+        if any(
+            other.entry_id != entry.entry_id
+            and other.state is config_entries.ConfigEntryState.LOADED
+            for other in self.hass.config_entries.async_entries(DOMAIN)
+        ):
+            return self.async_abort(reason="single_entry_only")
+
+        errors: dict[str, str] = {}
+        current = dict(entry.data)
+
+        if user_input is not None:
+            recipients = parse_recipients(user_input[CONF_RECIPIENTS])
+            base_url = user_input.get(CONF_BASE_URL, DEFAULT_BASE_URL).rstrip("/")
+            api_key = user_input.get(CONF_API_KEY) or current[CONF_API_KEY]
+            unique_id = f"{base_url}::{recipients[0]}" if recipients else None
+
+            if not recipients:
+                errors[CONF_RECIPIENTS] = "no_recipients"
+            elif any(
+                other.entry_id != entry.entry_id and other.unique_id == unique_id
+                for other in self.hass.config_entries.async_entries(DOMAIN)
+            ):
+                # Aceeasi regula ca la adaugare: un server si un prim numar
+                # apartin unei singure intrari.
+                errors["base"] = "already_configured"
+            else:
+                # Cheia (noua sau cea pastrata) e verificata pe serverul ales,
+                # ca la adaugare: nimic nu se salveaza daca nu merge.
+                error = await self._async_validate(base_url, api_key)
+                if error:
+                    errors["base"] = error
+
+            if not errors:
+                data = {
+                    CONF_API_KEY: api_key,
+                    CONF_BASE_URL: base_url,
+                    CONF_RECIPIENTS: recipients,
+                }
+                if user_input.get(CONF_DEFAULT_COUNTRY_CODE):
+                    data[CONF_DEFAULT_COUNTRY_CODE] = user_input[
+                        CONF_DEFAULT_COUNTRY_CODE
+                    ].strip()
+                if user_input.get(CONF_DEVICE_ID):
+                    data[CONF_DEVICE_ID] = user_input[CONF_DEVICE_ID].strip()
+
+                # Intrarea se reincarca singura cand i se schimba datele
+                # (_async_update_listener din __init__.py), deci actiunea
+                # notify.smstunnel foloseste setarile noi fara repornire.
+                self.hass.config_entries.async_update_entry(
+                    entry, data=data, unique_id=unique_id
+                )
+                return self.async_abort(reason="reconfigure_successful")
+
+        # Formularul porneste de la setarile de acum (sau de la ce a scris
+        # omul, daca a fost o eroare). Cheia nu e aratata niciodata.
+        shown = user_input if user_input is not None else {
+            CONF_RECIPIENTS: ", ".join(current.get(CONF_RECIPIENTS, [])),
+            CONF_BASE_URL: current.get(CONF_BASE_URL, DEFAULT_BASE_URL),
+            CONF_DEFAULT_COUNTRY_CODE: current.get(CONF_DEFAULT_COUNTRY_CODE),
+            CONF_DEVICE_ID: current.get(CONF_DEVICE_ID),
+        }
+        suggested = {
+            key: value
+            for key, value in shown.items()
+            if key != CONF_API_KEY and value
+        }
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=self.add_suggested_values_to_schema(
+                STEP_RECONFIGURE_SCHEMA, suggested
+            ),
+            errors=errors,
         )
 
     async def _async_validate(self, base_url: str, api_key: str) -> str | None:

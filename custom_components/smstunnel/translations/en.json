@@ -11,15 +11,30 @@
           "default_country_code": "Default country code (e.g. +40)",
           "device_id": "Device ID (optional)"
         }
+      },
+      "reconfigure": {
+        "title": "SMSTunnel settings",
+        "description": "Change who receives the texts, the phone that sends them, or the API key. Leave the API key empty to keep the current one.",
+        "data": {
+          "api_key": "API key (leave empty to keep the current one)",
+          "recipients": "Recipients (comma separated)",
+          "base_url": "Server URL",
+          "default_country_code": "Default country code (e.g. +40)",
+          "device_id": "Device ID (optional)"
+        }
       }
     },
     "error": {
       "cannot_connect": "Could not reach the SMSTunnel server. Check the server URL and your network.",
       "invalid_auth": "The API key was rejected. Check that it is correct and has the sms:send permission.",
-      "no_recipients": "Enter at least one phone number."
+      "no_recipients": "Enter at least one phone number.",
+      "already_configured": "Another SMSTunnel entry already uses this server and first recipient."
     },
     "abort": {
-      "already_configured": "This SMSTunnel account is already configured."
+      "already_configured": "This SMSTunnel account is already configured.",
+      "reconfigure_successful": "The settings were saved. The notify action uses them from now on.",
+      "entry_not_found": "This SMSTunnel entry no longer exists.",
+      "single_entry_only": "SMSTunnel is added more than once here. All its entries share the one action notify.smstunnel and only one of them answers it, so the settings can be changed from this menu only when a single entry is left. Remove the extra entries first."
     }
   }
 }
