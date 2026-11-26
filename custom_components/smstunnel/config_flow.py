@@ -51,7 +51,8 @@ STEP_USER_SCHEMA = vol.Schema(
 
 # Schimbarea setarilor unei intrari existente. Cheia e optionala: lasata
 # goala, ramane cea de acum (o cheie se vede o singura data in panou, deci
-# nu o cerem din nou doar ca sa schimbe cineva un numar).
+# nu o cerem din nou doar ca sa schimbe cineva un numar). Exceptie: cand se
+# schimba adresa serverului, cheia trebuie scrisa din nou.
 STEP_RECONFIGURE_SCHEMA = vol.Schema(
     {
         vol.Optional(CONF_API_KEY): TextSelector(
@@ -142,11 +143,20 @@ class SmsTunnelConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             recipients = parse_recipients(user_input[CONF_RECIPIENTS])
             base_url = user_input.get(CONF_BASE_URL, DEFAULT_BASE_URL).rstrip("/")
-            api_key = user_input.get(CONF_API_KEY) or current[CONF_API_KEY]
+            typed_key = user_input.get(CONF_API_KEY)
+            api_key = typed_key or current[CONF_API_KEY]
+            same_server = base_url == current.get(
+                CONF_BASE_URL, DEFAULT_BASE_URL
+            ).rstrip("/")
             unique_id = f"{base_url}::{recipients[0]}" if recipients else None
 
             if not recipients:
                 errors[CONF_RECIPIENTS] = "no_recipients"
+            elif not typed_key and not same_server:
+                # Cheia salvata a fost scrisa pentru serverul de acum. Nu o
+                # trimitem niciodata la alta adresa: cine schimba serverul
+                # scrie cheia din nou.
+                errors[CONF_API_KEY] = "key_required_for_new_server"
             elif any(
                 other.entry_id != entry.entry_id and other.unique_id == unique_id
                 for other in self.hass.config_entries.async_entries(DOMAIN)
@@ -155,8 +165,9 @@ class SmsTunnelConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 # apartin unei singure intrari.
                 errors["base"] = "already_configured"
             else:
-                # Cheia (noua sau cea pastrata) e verificata pe serverul ales,
-                # ca la adaugare: nimic nu se salveaza daca nu merge.
+                # Cheia (noua, sau cea pastrata cand serverul e acelasi) e
+                # verificata pe serverul ales, ca la adaugare: nimic nu se
+                # salveaza daca nu merge.
                 error = await self._async_validate(base_url, api_key)
                 if error:
                     errors["base"] = error

@@ -51,7 +51,7 @@ SMSTunnel is in the HACS default list, so there is no custom repository to add.
 
 ### Change the settings later
 
-**Settings → Devices & Services → SMSTunnel → ⋮ → Reconfigure** opens the same fields with their current values. Change the recipients, the phone or the server and save: `notify.smstunnel` uses the new settings at once, with no restart. Leave the API key empty to keep the current one. The key is checked again before anything is saved.
+**Settings → Devices & Services → SMSTunnel → ⋮ → Reconfigure** opens the same fields with their current values. Change the recipients, the phone or the server and save: `notify.smstunnel` uses the new settings at once, with no restart. Leave the API key empty to keep the current one; if you change the server URL, type the key again, because the saved key is never sent to a different server. The key is checked again before anything is saved.
 
 This needs Home Assistant 2024.4 or newer. On an older version, remove the integration and add it again.
 
@@ -126,7 +126,8 @@ How it works:
 - Settings → Devices & Services → Add Integration → SMSTunnel: "API key", "Recipients (comma
   separated)", "Server URL" (https://smstunnel.io), "Default country code", "Device ID (optional)".
   The key is checked during setup. To change the settings later: SMSTunnel's menu on that page →
-  Reconfigure (Home Assistant 2024.4 or newer; an empty key field keeps the current key).
+  Reconfigure (Home Assistant 2024.4 or newer; an empty key field keeps the current key, but a
+  new server URL needs the key typed again).
 - Action notify.smstunnel ("action:" in YAML; "service:" before Home Assistant 2024.8): message
   (required), title (the text becomes "title: message"), target (a number or a list; replaces the
   configured recipients for that call), and data: device_id or default_country_code for one call.
@@ -157,6 +158,7 @@ Built for **low-volume, transactional messaging** — alerts and notifications t
 
 ## Changelog
 
+- **1.1.1**: changing the server URL from the **Reconfigure** menu asks for the API key again, so the saved key is never sent to a different server.
 - **1.1.0**: change the recipients, the phone, the server or the API key from the integration's **Reconfigure** menu, without removing it. Nothing else changes: `notify.smstunnel` sends exactly as before.
 - **1.0.2**: passes the HACS and hassfest checks, and the README says plainly what still needs an internet connection.
 - **1.0.1**: the API key is typed into a password field, removing the integration stops `notify.smstunnel` at once (no restart), and SMSTunnel's icon shows in Home Assistant.

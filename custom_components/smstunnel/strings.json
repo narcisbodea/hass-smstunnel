@@ -14,7 +14,7 @@
       },
       "reconfigure": {
         "title": "SMSTunnel settings",
-        "description": "Change who receives the texts, the phone that sends them, or the API key. Leave the API key empty to keep the current one.",
+        "description": "Change who receives the texts, the phone that sends them, or the API key. Leave the API key empty to keep the current one. If you change the server URL, type the key again.",
         "data": {
           "api_key": "API key (leave empty to keep the current one)",
           "recipients": "Recipients (comma separated)",
@@ -28,7 +28,8 @@
       "cannot_connect": "Could not reach the SMSTunnel server. Check the server URL and your network.",
       "invalid_auth": "The API key was rejected. Check that it is correct and has the sms:send permission.",
       "no_recipients": "Enter at least one phone number.",
-      "already_configured": "Another SMSTunnel entry already uses this server and first recipient."
+      "already_configured": "Another SMSTunnel entry already uses this server and first recipient.",
+      "key_required_for_new_server": "You changed the server URL, so type the API key again. The saved key is never sent to a different server."
     },
     "abort": {
       "already_configured": "This SMSTunnel account is already configured.",
